@@ -17,7 +17,12 @@ export class AlunosModulosRepository {
   }
 
   async findAll(): Promise<AlunosModuloEntity[]> {
-    return this.prisma.alunos_Modulos.findMany();
+    return this.prisma.alunos_Modulos.findMany({
+      include: {
+        aluno: true,
+        modulo: true,
+      },
+    });
   }
 
   async findOne(id: string): Promise<AlunosModuloEntity> {
