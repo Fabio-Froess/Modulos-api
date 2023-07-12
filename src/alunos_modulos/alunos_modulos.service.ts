@@ -19,6 +19,10 @@ export class AlunosModulosService {
     return this.repository.findOne(id);
   }
 
+  findModulosByAluno(idAluno: string) {
+    return this.repository.findModuloByAluno(idAluno);
+  }
+
   update(id: string, updateAlunosModuloDto: UpdateAlunosModuloDto) {
     return this.repository.update(id, updateAlunosModuloDto);
   }

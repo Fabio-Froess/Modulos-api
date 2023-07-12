@@ -25,9 +25,14 @@ export class AlunosModulosController {
     return this.alunosModulosService.findAll();
   }
 
-  @Get(':id')
+  @Get('lista/:id')
   findOne(@Param('id') id: string) {
     return this.alunosModulosService.findOne(id);
+  }
+
+  @Get('lista-por-aluno/:id')
+  findModulosByAluno(@Param('id') idAluno: string) {
+    return this.alunosModulosService.findModulosByAluno(idAluno);
   }
 
   @Patch(':id')

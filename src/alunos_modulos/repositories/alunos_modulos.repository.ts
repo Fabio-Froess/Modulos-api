@@ -33,6 +33,14 @@ export class AlunosModulosRepository {
     });
   }
 
+  async findModuloByAluno(idAluno: string): Promise<AlunosModuloEntity | any> {
+    return await this.prisma.alunos_Modulos.findMany({
+      where: {
+        alunoId: idAluno,
+      },
+    });
+  }
+
   async update(
     id: string,
     updateAlunosModuloDto: UpdateAlunosModuloDto,
