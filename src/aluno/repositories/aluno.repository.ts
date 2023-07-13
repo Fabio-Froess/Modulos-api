@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAlunoDto } from '../dto/create-aluno.dto';
 import { UpdateAlunoDto } from '../dto/update-aluno.dto';
@@ -11,6 +15,15 @@ export class AlunoRepository {
   async create(createAlunoDto: CreateAlunoDto): Promise<AlunoEntity> {
     const { nome, cpf, data_nascimento } = createAlunoDto;
     const data_nasc = new Date(data_nascimento);
+    const alunoExiste = await this.prisma.aluno.findUnique({
+      where: {
+        cpf: createAlunoDto.cpf,
+      },
+    });
+
+    if (alunoExiste) {
+      throw new ConflictException('Aluno ja está cadastrado!!');
+    }
 
     return this.prisma.aluno.create({
       data: {
@@ -37,6 +50,16 @@ export class AlunoRepository {
     id: string,
     updateAlunoDto: UpdateAlunoDto,
   ): Promise<AlunoEntity> {
+    const alunoExiste = await this.prisma.aluno.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!alunoExiste) {
+      throw new ConflictException('Aluno Não cadastrado');
+    }
+
     return this.prisma.aluno.update({
       where: {
         id,
@@ -46,6 +69,27 @@ export class AlunoRepository {
   }
 
   async remove(id: string): Promise<AlunoEntity> {
+    const alunoExiste = await this.prisma.aluno.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!alunoExiste) {
+      throw new NotFoundException('Aluno não cadastrado!!');
+    }
+
+    const moduloExiste = await this.prisma.alunos_Modulos.findMany({
+      where: {
+        alunoId: id,
+      },
+    });
+
+    if (moduloExiste) {
+      throw new ConflictException(
+        'Este aluno está cadastrado em um modulo, não é possivel excluir!',
+      );
+    }
     return this.prisma.aluno.delete({
       where: {
         id,
